@@ -13,7 +13,8 @@ class WargaController extends Controller
      */
     public function index()
     {
-        return view('warga.index');
+        $data = warga::orderBy('updated_at', 'desc')->paginate(5);
+        return view('warga.index')->with('data', $data);
     }
 
     /**
@@ -28,31 +29,39 @@ class WargaController extends Controller
      */
     public function store(Request $request)
     {
+        // agar ketika salah mengisi filed, isi field tidak hilang
         Session::flash('nik', $request->nik);
         Session::flash('nama', $request->nama);
         Session::flash('alamat', $request->alamat);
 
-        $request->validate([
-            'nik'=>'required|numeric|regex:/^\d{16}$/|unique:warga,nik',
-            'nama'=>'required',
-            'alamat'=>'required'
-        ],[
-            'nik.required'=>'NIK harus di isi',
-            'nik.numeric'=>'NIM harus angka',
-            'nik.regex'=>'NIM harus 16 digit',
-            'nik.unique'=>'NIM sudah terdaftar',
-            'nama.required'=>'Nama harus di isi',
-            // 'nama.alpha'=>'Nama harus berupa huruf',
-            'alamat.required'=>'Alamat harus di isi'
+        // memberikan validasi
+        $request->validate(
+            [
+                'nik' => 'required|numeric|regex:/^\d{16}$/|unique:warga,nik',
+                'nama' => 'required',
+                'alamat' => 'required',
+            ],
+            [
+                'nik.required' => 'NIK harus di isi',
+                'nik.numeric' => 'NIM harus angka',
+                'nik.regex' => 'NIM harus 16 digit',
+                'nik.unique' => 'NIM sudah terdaftar',
+                'nama.required' => 'Nama harus di isi',
+                // 'nama.alpha'=>'Nama harus berupa huruf',
+                'alamat.required' => 'Alamat harus di isi',
+            ],
+        );
 
-        ]);
-        $data=[
-            'nik'=>$request->nik,
-            'nama'=>$request->nama,
-            'alamat'=>$request->alamat
+        // melakukan request POST create data
+        $data = [
+            'nik' => $request->nik, //untuk tabel nik di isi oleh field dengan nama nik
+            'nama' => $request->nama,
+            'alamat' => $request->alamat,
         ];
         warga::create($data);
-        return redirect()->to('warga')->with('success', 'Tambah Data Berhasil');
+        return redirect()
+            ->to('warga')
+            ->with('success', 'Berhasil melakukan CREATE data');
     }
 
     /**
@@ -68,7 +77,8 @@ class WargaController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = warga::where('nik', $id)->first();
+        return view('warga.edit')->with('data', $data);
     }
 
     /**
@@ -76,7 +86,24 @@ class WargaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate(
+            [
+                'nama' => 'required',
+                'alamat' => 'required',
+            ],
+            [
+                'nama.required' => 'Nama harus di isi',
+                // 'nama.alpha'=>'Nama harus berupa huruf',
+                'alamat.required' => 'Alamat harus di isi',
+            ],
+        );
+
+        $data = [
+            'nama' => $request->nama,
+            'alamat' => $request->alamat,
+        ];
+        warga::where('nik', $id)->update($data);
+        return redirect('warga')->with('success', 'Berhasil melakukan UPDATE data pada '.$request->nama);
     }
 
     /**

@@ -30,20 +30,29 @@
                 </tr>
             </thead>
             <tbody>
+                <?php 
+                    $i = $data->firstItem();
+                    ?>
+                @foreach ($data as $item)
+                    
                 <tr>
-                    <td>1</td>
-                    <td>1234567891012132</td>
-                    <td>Hannela Deyzy Annabelle</td>
-                    <td>Bandung</td>
+                    <td>{{$i}}</td>
+                    <td>{{$item->nik}}</td>
+                    <td>{{$item->nama}}</td>
+                    <td>{{$item->alamat}}</td>
                     <td>
-                        <a href="" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="" class="btn btn-danger btn-sm">Hapus</a>
+                        <a href="{{ url('warga/'.$item->nik.'/edit') }}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{{url('warga/'.$item->id.'')}}" class="btn btn-danger btn-sm">Hapus</a>
                     </td>
                 </tr>
+                <?php $i++ ?>
+                @endforeach
             </tbody>
-        </table>
-    </div>
+    </table>
+</div>
+{{$data->links()}}
     {{-- End Data --}}
 
    @include('warga.create')
+   
 @endsection
