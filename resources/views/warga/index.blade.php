@@ -30,8 +30,12 @@
                             <td>{{ $item->alamat }}</td>
                             <td>
                                 <a href="{{ url('warga/' . $item->nik . '/edit') }}" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="{{ url('warga/' . $item->id . '') }}" class="btn btn-danger btn-sm">Hapus</a>
-                            </td>
+                                <form onsubmit="return confirm('Apa kamu yakin akan menghapus data ?')" class="d-inline" action="{{ url('warga/' . $item->nik) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger" type="submit" name="submit">Hapus</button>
+                                </form>
+                            </td> 
                         </tr>
                         <?php $i++; ?>
                     @endforeach
@@ -39,7 +43,7 @@
             </table>
         </div>
     </div>
-    {{ $data->links() }}
+    {{ $data->withQueryString()->links() }}
     {{-- End Data --}}
 
     @include('warga.create')

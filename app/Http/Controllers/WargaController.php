@@ -11,9 +11,18 @@ class WargaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = warga::orderBy('updated_at', 'desc')->paginate(5);
+        $jumlahbaris =5;
+        $katakunci = $request->katakunci;
+        if (strlen($katakunci)) {
+            $data = warga::where('nik', 'like', "%$katakunci%")
+                ->orWhere('nama', 'like', "%$katakunci%")
+                ->orWhere('alamat', 'like', "%$katakunci%")
+                ->paginate($jumlahbaris);
+        } else {
+            $data = warga::orderBy('updated_at', 'desc')->paginate($jumlahbaris);
+        }
         return view('warga.index')->with('data', $data);
     }
 
@@ -43,9 +52,9 @@ class WargaController extends Controller
             ],
             [
                 'nik.required' => 'NIK harus di isi',
-                'nik.numeric' => 'NIM harus angka',
-                'nik.regex' => 'NIM harus 16 digit',
-                'nik.unique' => 'NIM sudah terdaftar',
+                'nik.numeric' => 'NIK harus angka',
+                'nik.regex' => 'NIK harus 16 digit',
+                'nik.unique' => 'NIK sudah terdaftar',
                 'nama.required' => 'Nama harus di isi',
                 // 'nama.alpha'=>'Nama harus berupa huruf',
                 'alamat.required' => 'Alamat harus di isi',
@@ -103,7 +112,7 @@ class WargaController extends Controller
             'alamat' => $request->alamat,
         ];
         warga::where('nik', $id)->update($data);
-        return redirect('warga')->with('success', 'Berhasil melakukan UPDATE data pada '.$request->nama);
+        return redirect('warga')->with('success', 'Berhasil melakukan UPDATE data pada ' . $request->nama);
     }
 
     /**
@@ -111,6 +120,9 @@ class WargaController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        warga::where('nik', $id)->delete();
+        return redirect()
+            ->to('warga')
+            ->with('success', 'Berhasil melakukan delete data');
     }
 }

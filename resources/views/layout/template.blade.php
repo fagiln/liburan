@@ -33,7 +33,7 @@
                         <a class="nav-link active" href="{{ url('logout') }}">Logout</a>
                     </li>
                 </ul>
-                <form action="" class="d-flex" method="POST">
+                <form action="{{url('warga')}}" class="d-flex" method="GET">
 
                     @if (Auth::check())
                         <div class="col-sm-3 d-flex justify-content-center align-items-center">
@@ -41,7 +41,7 @@
                         </div>
                     @endif
 
-                    <input class="form-control me-2" type="search" placeholder="Masukkan kata kunci" value=""
+                    <input class="form-control me-2" type="search" placeholder="Masukkan kata kunci" name="katakunci" value="{{Request::get('katakunci') }}"
                         aria-label="Search" autocomplete="off">
                     <button class="btn btn-primary" type="submit">Cari</button>
                 </form>
